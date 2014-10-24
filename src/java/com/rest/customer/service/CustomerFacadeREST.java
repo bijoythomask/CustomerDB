@@ -6,20 +6,22 @@
 package com.rest.customer.service;
 
 import com.rest.customer.Customer;
+import com.rest.customer.DiscountCode;
+import com.rest.customer.MicroMarket;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.QueryParam;
 
 /**
  *
@@ -30,6 +32,14 @@ import javax.ws.rs.core.Response;
 public class CustomerFacadeREST extends AbstractFacade<Customer> {
     @PersistenceContext(unitName = "CustomerDBPU")
     private EntityManager em;
+    
+    @EJB
+    DiscountCodeFacadeREST discountCodeFacade;
+    
+    @EJB
+    MicroMarketFacadeREST microMarketFacade;
+    
+    private static Integer custid=1000;
 
     public CustomerFacadeREST() {
         super(Customer.class);
@@ -37,9 +47,15 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     
     
     @POST
-    @Override
+    @Path("DiscountCode/{id}")
     @Consumes({"application/xml", "application/json"})
-    public void create(Customer entity) {
+    public void create(@PathParam("id") String id, Customer entity ,@QueryParam("zip") String zipCode) {
+        DiscountCode discountCode = discountCodeFacade.find(id);
+        
+        MicroMarket mMarket = microMarketFacade.find(zipCode);
+        entity.setCustomerId(custid++);
+        entity.setDiscountCode(discountCode);
+        entity.setZip(mMarket);
         super.create(entity);
     }
 
@@ -57,7 +73,7 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     }
 
     @GET
-    @Path("{id}")
+    @Path("{id}/DiscountCode/")
     @Produces({"application/xml", "application/json"})
     public Customer find(@PathParam("id") Integer id) {
         return super.find(id);
@@ -65,6 +81,7 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
 
     @GET
     @Override
+    @Path("DiscountCode")
     @Produces({"application/json"})
     public List<Customer> findAll() {
         return super.findAll();

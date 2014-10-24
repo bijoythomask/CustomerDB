@@ -29,6 +29,7 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(com.rest.customer.filters.CrossOriginResourceSharingFilter.class);
         resources.add(com.rest.customer.service.CustomerFacadeREST.class);
         resources.add(com.rest.customer.service.DiscountCodeFacadeREST.class);
         resources.add(com.rest.customer.service.MicroMarketFacadeREST.class);
