@@ -73,11 +73,13 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     }
 
     @GET
-    @Path("{id}/DiscountCode/")
+    @Path("{id}")
     @Produces({"application/xml", "application/json"})
     public Customer find(@PathParam("id") Integer id) {
         return super.find(id);
     }
+    
+    
 
     @GET
     @Override
